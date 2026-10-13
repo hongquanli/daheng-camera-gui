@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+snaps/
+*.tif
+*.tiff
+*.png
+.venv/
+venv/
+.idea/
+.vscode/
