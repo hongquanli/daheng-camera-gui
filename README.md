@@ -3,17 +3,33 @@
 A minimal PyQt5 GUI for a single Daheng (Galaxy / MER2) USB3 camera: live view, exposure time, gain,
 white balance, and snapshots. Nothing else.
 
-## Requirements
+## Install
 
-- Windows with the [Daheng Galaxy SDK](https://www.get-cameras.com/customerdownloads) installed (it provides
-  `GxIAPI.dll` / `DxImageProc.dll`). On Linux the SDK installs `libgxiapi.so` instead.
-- Python 3.9+
+Daheng's Python binding (`gxipy`) is vendored in this repo. What you need besides Python is the Daheng Galaxy SDK,
+which provides the camera driver library (`GxIAPI.dll` on Windows, `libgxiapi.so` on Linux).
+
+### Ubuntu
 
 ```
-pip install -r requirements.txt
+git clone https://github.com/hongquanli/daheng-camera-gui.git
+cd daheng-camera-gui
+./install_ubuntu.sh
 ```
 
-Daheng's Python binding (`gxipy`) is vendored in this repo, so there is nothing else to install.
+The script installs the apt packages, downloads and runs the Galaxy SDK installer non-interactively (x86_64; on
+ARM it runs interactively), and creates a `.venv` with the Python dependencies. The SDK installer puts
+`libgxiapi.so` and the USB3/GigE transport layers in `/usr/lib`, adds a udev rule so a normal user can open the
+camera, raises `usbfs_memory_mb` to 1000 (now, and via grub for future boots), and leaves Daheng's own
+`GalaxyView` tool under `/opt/daheng/Galaxy_camera/bin`. Unplug and replug the camera once after installing.
+
+Options: `--sdk-run <file>` to use a `Galaxy_camera.run` you already downloaded, `--skip-driver` for the Python side
+only, `--force-driver` to reinstall the SDK. Note that the SDK's grub step appends a `GRUB_CMDLINE_LINUX=` line to
+`/etc/default/grub`; the script keeps a copy at `/etc/default/grub.before-daheng-sdk` and warns if you now have two.
+
+### Windows
+
+1. Install the [Galaxy SDK](https://www.get-cameras.com/customerdownloads) for Windows.
+2. `pip install -r requirements.txt` (Python 3.9+).
 
 ## Run
 
@@ -23,6 +39,8 @@ python camera_gui.py --sn FCU23080688
 python camera_gui.py --list          # print connected cameras and exit
 python camera_gui.py --save-dir D:\snaps
 ```
+
+On Ubuntu use `.venv/bin/python camera_gui.py` (or activate the venv first).
 
 ## Controls
 
